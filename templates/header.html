@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>SangFor_Test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <link type="text/css" rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
+    <script type="text/javascript" src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+    <script type="text/javascript" src="../static/customed.js"></script>
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">SANGFOR TEST</a>
+
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <ul class="nav nav-tabs navbar-nav navbar-right collapse navbar-collapse">
+            <li role="presentation" id="home1"><a href="/">Home</a></li>
+            <li role="presentation" id="bwtest1"><a href="/bwtest">带宽检测</a></li>
+            <li role="presentation" id="netdet1"><a href="/net_detection">流量监控</a></li>
+            <li role="presentation" id="history1"><a href="/history">历史记录</a></li>
+            <li role="presentation" id="upload1"><a href="/upload">上传文件</a></li>
+            <li role="presentation" id="ontime1"><a href="/ontime">实时检测</a></li>
+
+        </ul>
+    </div>
+</nav>
+
+{% block body_part %}
+{% endblock %}
+</body>
+
+</html>

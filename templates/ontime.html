@@ -1,0 +1,193 @@
+{% extends 'header.html' %}
+
+{% block body_part %}
+
+    <h2 style="text-align: center; margin-top:50px; margin-bottom: 30px">实时监控结果</h2>
+    <div class="container" style="border-bottom: 1px solid gray; border-top: 1px solid gray">
+        <div class="row" style="margin-top: 50px; margin-bottom: 50px">
+            <div class="col-md-2 col-md-offset-1" style="border: 1px solid gray; border-radius: 10px 10px 10px 10px; height: 100px">
+                <h4>Download:</h4>
+                <p id="d1"></p>
+            </div>
+            <div class="col-md-2 col-md-offset-1" style="border: 1px solid gray; border-radius: 10px 10px 10px 10px; height:100px">
+                <h4>Upload:</h4>
+                <p id="d2"></p>
+            </div>
+            <div class="col-md-2 col-md-offset-1" style="border: 1px solid gray; border-radius: 10px 10px 10px 10px; height:100px">
+                <h4>正常流量:</h4>
+                <p id="d3"></p>
+            </div>
+            <div class="col-md-2 col-md-offset-1" style="border: 1px solid gray; border-radius: 10px 10px 10px 10px; height: 100px">
+                <h4>异常流量:</h4>
+                <p id="d4"></p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="container" style="border-bottom: 1px solid #0f0f0f">
+        <div class="col-md-6" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:400px; height: 400px" id="line1"></div>
+        </div>
+
+
+        <div class="col-md-6" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:400px; height: 400px" id="line2"></div>
+        </div>
+    </div>
+
+    <div class="container" style="border-bottom: 1px solid #0f0f0f">
+        <div class="col-md-6" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:400px; height: 400px" id="bar1"></div>
+        </div>
+
+
+        <div class="col-md-6" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:400px; height: 400px" id="pie1"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("ontime1").className = "active"
+    </script>
+
+    <script type="text/javascript">
+        setInterval(
+            function () {
+                $.ajax({
+                    type: "POST",
+                    data: "refresh",
+                    datatype: 'json',
+                    url: "/refresh112",
+                    async: false,
+                    success: function (data) {
+                        console.log(data)
+                        {
+                            createLine1(data.download, data.upload);
+                            createchart('line2', 'Ping', 'line', ['1', '2', '3', '4'], data.ping);
+                            createchart('bar1', '流量监控', 'bar', ['正常', '异常'], [data.a, data.b]);
+                            createpie1(data.a, data.b);
+                            var d1 = document.getElementById('d1');
+                            var end = data.download[data.download.length - 1]
+                            d1.appendChild(document.createTextNode(end + 'Mbps'))
+                            var d2 = document.getElementById('d2');
+                            var end = data.upload[data.upload.length - 1]
+                            d2.appendChild(document.createTextNode(data.upload.slice(-1) + 'Mbps'))
+                            var d3 = document.getElementById('d3');
+                            d3.appendChild(document.createTextNode(data.a))
+                            var d4 = document.getElementById('d4');
+                            d4.appendChild(document.createTextNode(data.b))
+
+                        }
+
+                    }
+                })
+            }
+            , 180000);
+
+    </script>
+
+    <script type="text/javascript">
+        function createLine1(a, b) {
+            var mychart1 = echarts.init(document.getElementById('line1'), 'customed')
+            var option = {
+                title: {
+                    text: '上传/下载带宽'
+                },
+                tooltip: {},
+                xAxis: {
+                    data: ['1', '2', '3', '4']
+                },
+                yAxis: {},
+                axisTick: {
+                    show: true
+                },
+                axisLabel: {
+                    show: true
+                },
+                legend: {
+                    x: 'right'
+                },
+                series: [
+                    {
+                        name: 'download',
+                        type: 'line',
+                        data: a,
+                        itemStyle: {normal: {label: {show: true}}}
+                    },
+                    {
+                        name: 'upload',
+                        type: 'line',
+                        data: b,
+                        itemStyle: {normal: {label: {show: true}}}
+                    }
+                ]
+            }
+            mychart1.setOption(option);
+        }
+
+        function createchart(id, name, type, x, a) {
+            var mychart1 = echarts.init(document.getElementById(id), 'customed')
+            var option = {
+                title: {
+                    text: name
+                },
+                tooltip: {},
+                axisTick: {
+                    show: true
+                },
+                axisLabel: {
+                    show: true
+                },
+
+                xAxis: {
+                    data: x
+                },
+                yAxis: {},
+                legend: {
+                    x: 'right'
+                },
+                series: [
+                    {
+                        name: name,
+                        type: type,
+                        data: a,
+                        itemStyle: {normal: {label: {show: true}}}
+                    }
+                ]
+            }
+            mychart1.setOption(option);
+        }
+
+        function createpie1(a, b) {
+            var mychart1 = echarts.init(document.getElementById('pie1'), 'customed');
+            mychart1.setOption({
+                tooltip: {},
+                axisTick: {
+                    show: true
+                },
+                axisLabel: {
+                    show: true
+                },
+                legend: {
+                    x: 'right'
+                },
+                series: [
+                    {
+                        name: '流量监控',
+                        type: 'pie',    // 设置图表类型为饼图
+                        radius: '55%',  // 饼图的半径，外半径为可视区尺寸（容器高宽中较小一项）的 55% 长度。
+                        data: [          // 数据数组，name 为数据项名称，value 为数据项值
+                            {value: a, name: '正常'},
+                            {value: b, name: '异常'}
+                        ],
+                        itemStyle: {normal: {label: {show: true}}}
+                    }
+                ]
+            })
+
+        }
+    </script>
+{% endblock %}

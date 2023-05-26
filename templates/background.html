@@ -1,0 +1,78 @@
+﻿
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Starback.js网页背景斜线动态特效</title>
+   
+    <style>
+        html, * {
+            font-family: 'Inter';
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #222;
+            color: #fff;
+            line-height: 1.6;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .lead {
+            font-size: 1.5rem;
+            font-weight: 300;
+        }
+
+        .container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #canvas {
+            -webkit-transform: translate3d(0,0,0);
+            -moz-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
+            z-index: -2;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="container">
+        <h1>Starback.js</h1>
+        <p class="lead">一个JavaScript背景动态特效，可以作为任何容器的背景。</p>
+    </div>
+    <script src="../static/starback.js"></script>
+    <script>
+        const starback = new Starback(canvas, {
+            width: canvas.parentElement.clientWidth,
+            height: canvas.parentElement.clientHeight,
+            speed: 5,
+            frequency: 5,
+            slope: { x: 5, y: 3 },
+            directionX: 1,
+            spread: .2,
+            randomOpacity: true,
+            backgroundColor: ["#0F2027", "#203A43", "#2C5364"]
+        })
+        starback.generateStar(30)
+    </script>
+    
+</body>
+</html>

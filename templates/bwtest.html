@@ -1,0 +1,160 @@
+{% extends 'header.html' %}
+
+{% block body_part %}
+    <div class="col-md-3 col-md-offset-1">
+        <div style="text-align: center; height: 600px; float: none; display: block;">
+            <form method="POST">
+                <button class="btn btn-info btn-circle btn-lg" type="submit"
+                        style="text-align: center; margin-top: 230px">Start
+                </button>
+            </form>
+        </div>
+    </div>
+    <style>
+        .btn-circle {
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 30px;
+            line-height: 2.428571429;
+            border-radius: 30px;
+        }
+
+        .btn-circle.btn-lg {
+            width: 160px;
+            height: 160px;
+            padding: 20px 32px;
+            font-size: 36px;
+            line-height: 2.33;
+            border-radius: 100px;
+        }
+
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none;
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+    </style>
+    <div class="col-md-4 ">
+        <div id="container" style="height: 600px;"></div>
+    </div>
+
+    <div class="col-md-4 ">
+        <div id="download" style="height: 100px; border-bottom: 1px solid gray; margin-top: 40px">
+            <img style="display:inline; float:left; margin: 0 auto;" width="10%" height="80%" src="/static/bwtest1.svg"
+                 alt="download">
+            <p style="font-size: 180%; margin-left: 100px;">Download:{{ download }}Mbps</p>
+        </div>
+    </div>
+    <div class="col-md-4 ">
+        <div id="upload" style="height: 100px; border-bottom: 1px solid gray; margin-top: 40px">
+            <img style="display:inline; float:left; margin: 0 auto" width="10%" height="80%" src="/static/bwtest1.svg"
+                 alt="upload">
+            <p style="font-size: 180%; margin-left: 100px;">Upload:{{ upload }}Mbps</p>
+        </div>
+    </div>
+    <div class="col-md-4 ">
+        <div id="ping" style="height: 100px; border-bottom: 1px solid gray; margin-top: 40px">
+            <img style="display:inline; float:left; margin: 0 auto" width="10%" height="80%" src="/static/ping1.svg"
+                 alt="ping">
+            <p style="font-size: 180%; margin-left: 100px;">Ping:{{ ping }}ms</p>
+        </div>
+    </div>
+    <div class="col-md-4 ">
+        <div id="isp" style="height: 100px; border-bottom: 1px solid gray; margin-top: 40px">
+            <img style="display:inline; float:left; margin: 0 auto" width="10%" height="80%" src="/static/isp1.svg"
+                 alt="ping">
+            <p style="font-size: 180%; margin-left: 100px;">ISP:{{ client }}</p>
+        </div>
+    </div>
+
+    <div class="container" style="border-bottom: 1px solid #0f0f0f">
+        <div class="col-md-12" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:1200px; height: 400px" id="line1"></div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        var mychart1 = echarts.init(document.getElementById('line1'))
+        mychart1.setOption({{ line_chart | safe }})
+    </script>
+
+
+    <script type="text/javascript">
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        var app = {};
+
+        var option;
+
+
+        option = {
+            tooltip: {
+                formatter: '{a} <br/>{b} : {c}%'
+            },
+            series: [{
+                name: 'Pressure',
+                type: 'gauge',
+                max: 300,
+                detail: {
+                    formatter: '{value}'
+                },
+                data: [{
+                    value: {{download}},
+                    name: 'download: /Mbps'
+                }]
+            }]
+        };
+
+
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+
+    </script>
+
+
+
+    <style>
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
+        .button1 {
+            background-color: white;
+            color: black;
+            border: 2px solid #4CAF50;
+        }
+
+        .button1:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+
+    </style>
+
+    <script>
+        document.getElementById("bwtest1").className = "active"
+    </script>
+
+{% endblock %}

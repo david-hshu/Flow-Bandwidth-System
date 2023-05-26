@@ -1,0 +1,171 @@
+{% extends 'header.html' %}
+
+{% block body_part %}
+    <div class="container" style="border-bottom: 1px solid #0f0f0f">
+        <div class="col-md-6" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:400px; height: 400px" id="line1"></div>
+        </div>
+
+
+        <div class="col-md-6" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:400px; height: 400px" id="line2"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var mychart1 = echarts.init(document.getElementById('line1'))
+        mychart1.setOption({{ line_chart | safe }})
+    </script>
+
+    <script type="text/javascript">
+        var mychart2 = echarts.init(document.getElementById('line2'))
+        mychart2.setOption({{ line_chart2 | safe }})
+    </script>
+
+    <h2 style="text-align: center; margin-top:50px; margin-bottom: 30px">历史记录</h2>
+    <div class="container" style="margin-bottom: 100px">
+        <table class="table table-striped" id="table">
+            <thead>
+            <tr>
+                <th scope="col">时间</th>
+                <th scope="col">数据流数</th>
+                <th scope="col">异常数</th>
+            </tr>
+            </thead>
+
+        </table>
+        <nav aria-label="Page navigation" id="nav">
+        </nav>
+    </div>
+
+    <script type="text/javascript">
+        var data = {{ list | safe}};
+        console.log(data);
+        var date1 = {{ date1 | safe }}
+        console.log(date1)
+
+        var ul = document.querySelector('.pagination');
+        var page = 1;
+        var line = 12;
+        var len = Math.ceil(data.length / line);
+
+        function createTable() {
+            var table = document.getElementById('table');
+            var tbody = document.createElement('tbody');
+            var tr, td;
+            let start = (page - 1) * line;
+            let end = start + line;
+            var dataList = data.slice(start, end);
+            for (item in dataList) {
+                tr = document.createElement('tr')
+                for (attribute in data[item]) {
+                    td = document.createElement('td');
+                    if(attribute == 0){
+                        var myherf = document.createElement('a')
+                        myherf.href = "/detail_daily/" + {{ date1 | safe }} + ' ' + data[item][attribute]
+                        console.log(myherf.href)
+                        var text = document.createTextNode(dataList[item][attribute])
+                        myherf.appendChild(text)
+                        td.appendChild(myherf)
+                    }else {
+                        td.appendChild(document.createTextNode(dataList[item][attribute]));
+                    }
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+        }
+
+        function createNavItem(className, text) {
+            var span, li;
+            span = document.createElement('span')
+            span.className = 'page-link'
+            span.appendChild(document.createTextNode(text))
+            switch (text) {
+                case 'previous':
+                    span.addEventListener('click', () => setPage(page - 1));
+                    break;
+                case 'Next':
+                    span.addEventListener('click', () => setPage(page + 1));
+                    break;
+                default:
+                    span.addEventListener('click', () => setPage(text));
+            }
+
+            li = document.createElement('li');
+            li.className = className
+            li.appendChild(span)
+            return li
+        }
+
+        function createNav() {
+            var nav = document.getElementById('nav');
+            var span = document.createElement('span');
+            span.appendChild(document.createTextNode(`共${data.length}条记录，分${len}页 当前在第${page}页`))
+            nav.appendChild(span)
+
+            var ul = document.createElement('ul');
+            ul.className = "pagination justify-content-end";
+            var start = page > 3 ? page - 2 : 1;
+            var end = page > len - 3 ? len + 1 : start + 5;
+            if (page == 1) {
+                className = 'page-item disabled'
+            } else {
+                className = 'page-item'
+            }
+
+            ul.appendChild(createNavItem(className, 'Previous'))
+
+            for (i = start; i < end; i++) {
+                if (i == page) {
+                    className = 'page-item active'
+                } else {
+                    className = 'page-item'
+                }
+                ul.appendChild(createNavItem(className, i))
+            }
+
+            if (page == len) {
+                className = 'page-item disabled'
+            } else {
+                className = 'page-item'
+            }
+
+            ul.appendChild(createNavItem(className, 'Next'))
+            nav.appendChild(ul)
+        }
+
+        function setPage(_page) {
+            page = _page
+            reRender()
+        }
+
+
+        function initPage() {
+            createTable()
+            createNav()
+        }
+
+        function removeElem(elem) {
+            let parent = elem.parentElement;
+            parent.removeChild(elem)
+        }
+
+        function reRender() {
+            removeElem(document.querySelector('table > tbody'))
+            removeElem(document.querySelector('#nav > span'))
+            removeElem(document.querySelector('#nav > ul'))
+            createTable()
+            createNav()
+        }
+
+
+        window.addEventListener('load', initPage, false);
+
+    </script>
+
+    <script>
+        document.getElementById("history1").className = "active"
+    </script>
+{% endblock %}

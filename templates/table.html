@@ -1,0 +1,188 @@
+{% extends 'header.html' %}
+<style>
+    #main {
+        width: 80%;
+        margin: 20px auto;
+    }
+
+    nav {
+        text-align: center;
+    }
+</style>
+
+{% block body_part %}
+
+    <div class="container" style="border-bottom: 1px solid #0f0f0f">
+        <h3>流量监控检测结果</h3>
+        <p>在本次检测中共有{{ total_stream }}条数据流，其中{{ usual }}条正常，{{ unusual }}条异常</p>
+    </div>
+    <div class="container" style="border-bottom: 1px solid #0f0f0f">
+        <div class="col-md-6" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:400px; height: 400px" id="bar1"></div>
+        </div>
+
+
+        <div class="col-md-6" style="margin-top: 60px; margin-bottom: 60px">
+            <div class="container" style="width:400px; height: 400px" id="pie1"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var mychart1 = echarts.init(document.getElementById('bar1'))
+        mychart1.setOption({{ bardata | safe }})
+    </script>
+
+    <script type="text/javascript">
+        var mychart2 = echarts.init(document.getElementById('pie1'))
+        mychart2.setOption({{ piedata | safe }})
+    </script>
+
+    <h2 style="text-align: center; margin-bottom: 30px">流量数据列表</h2>
+    <div class="container" style="margin-bottom: 100px">
+        <table class="table table-striped" id="table">
+            <thead>
+            <tr>
+                <th scope="col">源IP</th>
+                <th scope="col">目的IP</th>
+                <th scope="col">源端口</th>
+                <th scope="col">目的端口</th>
+                <th scope="col">协议</th>
+                <th scope="col">内容</th>
+                <th scope="col">数据流</th>
+                <th scope="col">结果</th>
+
+            </tr>
+            </thead>
+
+        </table>
+        <nav aria-label="Page navigation" id="nav">
+        </nav>
+    </div>
+
+    <script type="text/javascript">
+        var data = {{ list | safe}};
+        console.log(data);
+
+        var ul = document.querySelector('.pagination');
+        var page = 1;
+        var line = 12;
+        var len = Math.ceil(data.length / line);
+
+        function createTable() {
+            var table = document.getElementById('table');
+            var tbody = document.createElement('tbody');
+            var tr, td;
+            let start = (page - 1) * line;
+            let end = start + line;
+            var dataList = data.slice(start, end);
+            for (item in dataList) {
+                tr = document.createElement('tr')
+                if(data[item][7] == 1 || data[item][7] == '1'){
+                    tr.className = 'danger';
+                }
+
+                for (attribute in data[item]) {
+                    td = document.createElement('td');
+                    td.appendChild(document.createTextNode(dataList[item][attribute]));
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+        }
+
+        function createNavItem(className, text) {
+            var span, li;
+            span = document.createElement('span')
+            span.className = 'page-link'
+            span.appendChild(document.createTextNode(text))
+            switch (text) {
+                case 'previous':
+                    span.addEventListener('click', () => setPage(page - 1));
+                    break;
+                case 'Next':
+                    span.addEventListener('click', () => setPage(page + 1));
+                    break;
+                default:
+                    span.addEventListener('click', () => setPage(text));
+            }
+
+            li = document.createElement('li');
+            li.className = className
+            li.appendChild(span)
+            return li
+        }
+
+        function createNav() {
+            var nav = document.getElementById('nav');
+            var span = document.createElement('span');
+            span.appendChild(document.createTextNode(`共${data.length}条记录，分${len}页 当前在第${page}页`))
+            nav.appendChild(span)
+
+            var ul = document.createElement('ul');
+            ul.className = "pagination justify-content-end";
+            var start = page > 3 ? page - 2 : 1;
+            var end = page > len - 3 ? len + 1 : start + 5;
+            if (page == 1) {
+                className = 'page-item disabled'
+            } else {
+                className = 'page-item'
+            }
+
+            ul.appendChild(createNavItem(className, 'Previous'))
+
+            for (i = start; i < end; i++) {
+                if (i == page) {
+                    className = 'page-item active'
+                } else {
+                    className = 'page-item'
+                }
+                ul.appendChild(createNavItem(className, i))
+            }
+
+            if (page == len) {
+                className = 'page-item disabled'
+            } else {
+                className = 'page-item'
+            }
+
+            ul.appendChild(createNavItem(className, 'Next'))
+            nav.appendChild(ul)
+        }
+
+        function setPage(_page) {
+            page = _page
+            reRender()
+        }
+
+
+        function initPage() {
+            createTable()
+            createNav()
+        }
+
+        function removeElem(elem) {
+            let parent = elem.parentElement;
+            parent.removeChild(elem)
+        }
+
+        function reRender() {
+            removeElem(document.querySelector('table > tbody'))
+            removeElem(document.querySelector('#nav > span'))
+            removeElem(document.querySelector('#nav > ul'))
+            createTable()
+            createNav()
+        }
+
+
+        window.addEventListener('load', initPage, false);
+
+    </script>
+
+    <script>
+        document.getElementById("netdet1").className = "active"
+    </script>
+
+
+{% endblock %}
+

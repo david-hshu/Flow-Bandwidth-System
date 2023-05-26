@@ -1,0 +1,29 @@
+{% extends 'header.html' %}
+
+{% block body_part %}
+    <div class="container" style="border-bottom: 1px solid #0f0f0f">
+        <p class="lead" style="">请选择实时流量监控或上传网络流量文件检测</p>
+    </div>
+
+    <div class="container" style="margin-top: 160px">
+        <a href="/table/0">
+            <div class="col-md-6 btn" onclick="">
+
+                <img src="../static/netdetect.svg" alt="实时监测" class="">
+                <div>实时监控</div>
+            </div>
+        </a>
+        <a href="/upload">
+            <div class="col-md-6 btn">
+
+                <img src="../static/upload.svg" alt="上传文件" class="">
+                <div>上传文件</div>
+            </div>
+        </a>
+
+
+    </div>
+    <script>
+        document.getElementById("netdet1").className = "active"
+    </script>
+{% endblock %}

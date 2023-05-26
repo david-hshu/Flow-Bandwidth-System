@@ -1,0 +1,92 @@
+﻿
+<body style="background:#000000">
+<div class="speedometer">
+	<div class="inner-ring"></div>
+	<div class="outer-ring">
+		<span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+	</div>
+	<div class="digit-ring">
+		<span class="digit">0</span><span class="digit">20</span><span class="digit">40</span><span class="digit">60</span><span class="digit">80</span><span class="digit">100</span><span class="digit">120</span><span class="digit">140</span><span class="digit">160</span>
+	</div>
+	<div class="details">
+		<p class="label">下载速度</p>
+		<p class="speed">87.3</p>
+		<p class="unit">Mbps</p>
+	</div>
+	<div class="progress"></div>
+
+</div>
+<script type="text/javascript">
+	var ticks = $('.tick');
+	var digits = $('.digit');
+	var details = $('.details');
+	var progress = $('.progress');
+
+	var outerRingRadius = 164;
+	var digitRingRadius = 145;
+
+
+	ticks.each(function (i) {
+		var angle = 210 - i * 5;
+		var theta = deg2rad(angle);
+		var radius = outerRingRadius + (i % 6 ? 0 : 4);
+		var x = Math.cos(theta) * radius;
+		var y = Math.sin(theta) * -radius;
+		var transform = [`translate(${x}px, ${y}px)`, `rotate(${-angle}deg)`].join(' ');
+		$(this).css({
+			'-webkit-transform': transform,
+			'-moz-transform': transform,
+			'transform': transform
+		});
+	});
+
+	digits.each(function (i) {
+		var angle = 210 - i * 30;
+		var theta = deg2rad(angle);
+		var x = Math.cos(theta) * digitRingRadius;
+		var y = Math.sin(theta) * -digitRingRadius;
+		$(this).css({
+			'-webkit-transform': `translate(${x}px, ${y}px)`,
+			'-moz-transform': `translate(${x}px, ${y}px)`,
+			'transform': `translate(${x}px, ${y}px)`
+		});
+	});
+	$('.retry-button').on('click', function () {
+		statValueCurrent = 0;
+		updateDetails();
+	});
+
+	var frameCount = 100;
+	var frameInterval = 0.3;
+	var digitValueMax = 160;
+	var statValueMax = 87.3;
+	var statValueCurrent = 0;
+	var statValueInterval = statValueMax / frameCount;
+
+	updateDetails();
+
+	function updateDetails() {
+		if (statValueCurrent.toFixed(1) > statValueMax) {
+			return;
+		}
+		setStatValue(statValueCurrent.toFixed(1));
+		statValueCurrent += statValueInterval;
+		setTimeout(updateDetails, frameInterval);
+	}
+
+
+	function setStatValue(value) {
+		var angle = -120 + 240 * (value / digitValueMax);
+		progress.css({
+			'transform': `rotate(${angle}deg)`
+		});
+		details.find('.speed').text(value);
+	}
+
+	function deg2rad(angle) {
+		return angle * (Math.PI / 180);
+	}
+	function rad2deg(angle) {
+		return angle * (180 / Math.PI);
+	}
+</script>
